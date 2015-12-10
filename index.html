@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://fb.me/react-0.14.3.js"></script>
+    <script src="https://fb.me/react-dom-0.14.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+
+  </head>
+  <body>
+    <div id="main"></div>
+    <script type="text/babel">
+
+var Item = React.createClass({
+  render: function() {
+    return (
+      <div className='item'>
+      <div className='itemRow'>
+        <span>{this.props.value}</span>
+        <i className='cross' onClick={this.props.onClickClose}>&times;</i>
+      </div>
+      </div>
+    )
+  }
+});
+  
+var ItemList = React.createClass({
+  removeItem: function(index) {
+    this.props.clickAction(index, this.props.col);
+  },
+  render: function() {
+    var items = this.props.data.map(function(item, index) {
+
+      if(item.value.indexOf(this.props.query) === -1 ) {
+        return;
+      }
+
+      return (
+        <Item
+        key={index}
+        value={item.value}
+        onClickClose={this.removeItem.bind(this, index)}
+      /> );
+    }.bind(this));
+
+    return (
+          <div> {items}</div>);
+  }
+});
+
+var Wrap = React.createClass({
+  getInitialState: function() {
+    return {
+      items1: [,
+        { value:'Be awesome' },
+        { value:'Learn React' },
+        { value:'Use JSX in my CodePens'}
+      ],
+      items2: [,
+        { value:'Be awesome', done: false },
+        { value:'Learn React', done: true },
+        { value:'Use JSX in my CodePens', done: true },
+        { value:'Use JSX in my CodePens', done: true }
+      ],
+      filterText: ''
+    }
+  },
+  addItem: function(e) {
+    e.preventDefault();
+    var option = document.getElementById('selected').value;
+        console.log(option);
+    if(!this.state.inputValue){
+      alert('Cannot be empty');
+      return false;
+    }    
+    if(option=='one'){
+          var items = this.state.items1;
+      items.push({
+      value: this.state.inputValue    });
+
+    this.setState({
+      items1: items,
+      inputValue: ''
+    });
+    } else if(option=='two') {
+          var items = this.state.items2;
+      items.push({
+      value: this.state.inputValue    });
+
+    this.setState({
+      items2: items,
+      inputValue: ''
+    });
+
+    } else {
+      alert('Please Select A Column');
+      return false;
+    }
+    // Return false for form
+    return false;
+  },
+  handleChange: function(e) {
+    this.setState({
+      inputValue: e.target.value
+    });
+  },
+  handleSearch: function(e) {
+    this.setState({
+      filterText: e.target.value
+    });
+  },
+  removeItem: function(index, data) {
+    if(data == 'one'){
+       this.state.items1.splice(index, 1);
+       this.setState({
+        items1: this.state.items1
+       });
+    } else {
+      this.state.items2.splice(index, 1);
+       this.setState({
+        items2: this.state.items2
+       });
+    }
+
+    
+  },
+  render: function() {
+    return (
+      <div className='container col-sm-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2'>
+          <h1>Marvelous!</h1>
+          <p className='col-sm-12 col-md-6 col-lg-4'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget purus accumsan, tempus dui eu, blandit ante. Sed enim lorem, gravida vel pulvinar non, placerat vitae eros. Fusce varius dictum dui, sed posuere odio dignissim nec. Duis et venenatis neque, ut eleifend magna. Nulla facilisi. </p>
+          <div className='clearfix'></div>
+          <div className='banner'> ADD AN ITEM </div>
+          <div className='row'>
+            <div className='col-md-4 col-lg-4'>
+              <form className='' role='form' onSubmit={this.addItem}>
+                <div className='addItem'>
+                  <label className='sr-only' htmlFor='itemInput'></label>
+                  <input type='text' value={this.state.inputValue} onChange={this.handleChange} className='form-control' placeholder='What do you need to do?'/>
+                  <select name="column" id='selected' className='col-md-12 col-lg-12 select-colomn' required>
+                    <option selected="selected" disabled="disabled">CHOOSE A COLUMN</option>
+                    <option value = 'one'>Col A</option>
+                    <option value = 'two'>Col B</option>
+                  </select>
+                  <div className='input-group-btn'> 
+                    <button className='btn btn-default'>ADD ITEM</button>
+                  </div>
+                </div>
+
+              </form> 
+              <div className="search">SEARCH AN ITEM</div>
+              <input type='text' onChange={this.handleSearch} />
+            </div>
+            <div className="column col-sm-12 col-md-4 col-lg-4">
+                <h3 className="title">COLUMN 1</h3>
+                <ItemList data={this.state.items1} col='one' clickAction={this.removeItem} query={this.state.filterText} />
+            </div>
+            <div className="column col-sm-12 col-md-4 col-lg-4">
+                <h3 className="title">COLUMN 2</h3>
+                <ItemList data={this.state.items2} col='two' clickAction={this.removeItem} query={this.state.filterText} />
+            </div>
+          </div>
+          
+      </div>
+    );
+  }
+});
+ReactDOM.render(<Wrap />, document.getElementById('main'));
+    </script>
+  </body>
+</html>
